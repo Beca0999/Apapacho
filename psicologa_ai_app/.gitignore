@@ -1,0 +1,33 @@
+# Entornos virtuales
+venv/
+env/
+.env
+
+# Base de datos local
+*.db
+*.sqlite3
+psicologa.db
+
+# Caché de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Carpetas de desarrollo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db
+
+# Carpetas de editores o IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Específicos de Streamlit (si configuras secretos locales)
+.streamlit/secrets.toml
