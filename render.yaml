@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: apapacho
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run app.py --server.port $PORT
+    envVars:
+      - key: GEMINI_API_KEY
+        sync: false # Debes llenar esto en el panel de Render
+      - key: GEMINI_MODEL
+        value: gemini-3.1-flash-lite
+      - key: APAPACHO_EMERGENCY_NUMBER
+        value: "911"
+      - key: APAPACHO_SUPPORT_NUMBER
+        value: "800 911 2000"
