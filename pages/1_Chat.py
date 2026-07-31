@@ -191,7 +191,7 @@ st.markdown("""
 
 col_img, col_text = st.columns([1, 4], gap="small")
 with col_img:
-    st.image("assets/apapacho_chat.png", use_container_width=True)
+    st.image("assets/apapacho_chat.png", use_column_width="always")
 with col_text:
     st.title("🌿 Sesión con Lyna")
     st.caption("Habla con calma, toma tu tiempo y cuida tu bienestar.")

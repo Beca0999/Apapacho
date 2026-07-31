@@ -177,7 +177,7 @@ with hero_text_col:
 with hero_img_col:
     # Adding a bit of top margin to center image vertically with text
     st.markdown("<div style='margin-top: 2rem;'></div>", unsafe_allow_html=True)
-    st.image("assets/apapacho_hero.png", use_container_width=True)
+    st.image("assets/apapacho_hero.png", use_column_width="always")
 
 st.markdown("<br><br><br>", unsafe_allow_html=True)
 

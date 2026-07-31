@@ -30,7 +30,7 @@ st.markdown("""
 
 col_img, col_text = st.columns([1, 4])
 with col_img:
-    st.image("assets/apapacho_admin.png", use_container_width=True)
+    st.image("assets/apapacho_admin.png", use_column_width=True)
 with col_text:
     st.title("⚙️ Panel de Administración")
     st.markdown("Gestiona los usuarios y los perfiles de los agentes de Inteligencia Artificial de Apapacho.")
