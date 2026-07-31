@@ -124,14 +124,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Cookie Manager for sessions
-cookie_manager = stx.CookieManager()
+cookie_manager = stx.CookieManager(key="apapacho_session")
 
 # Login System
 if not st.session_state.get('logged_in', False):
+    cookie_manager.get_all()
     cookie_user_id = cookie_manager.get("apapacho_user_id")
     if cookie_user_id:
         # Prevent re-running endlessly if cookie is being processed
-        # stx.CookieManager requires a small delay on first load, so we check carefully
+        # stx.CookieManager may cache cookies on first run, so we refresh explicitly.
         user = get_user_by_id(int(cookie_user_id))
         if user:
             st.session_state.logged_in = True
