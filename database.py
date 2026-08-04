@@ -10,6 +10,7 @@ connect_args = {"check_same_thread": False} if DATABASE_URL.startswith("sqlite")
 engine = create_engine(DATABASE_URL, connect_args=connect_args)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
+_db_initialized = False
 
 print("DATABASE_URL set:" , "no" if DATABASE_URL.startswith("sqlite") else "yes")
 if DATABASE_URL.startswith("sqlite"):
@@ -60,6 +61,10 @@ def get_db():
 
 
 def init_db():
+    global _db_initialized
+    if _db_initialized:
+        return
+
     Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     try:
@@ -74,11 +79,18 @@ def init_db():
             db.commit()
     finally:
         db.close()
+    _db_initialized = True
+
+
+def _ensure_db_initialized():
+    if not _db_initialized:
+        init_db()
 
 
 # --- Users CRUD ---
 
 def create_user(name, email, password, role='patient'):
+    _ensure_db_initialized()
     db = SessionLocal()
     hashed_pw = hash_password(password)
     user = User(name=name, email=email, password=hashed_pw, role=role)
@@ -95,6 +107,7 @@ def create_user(name, email, password, role='patient'):
 
 
 def verify_user(email, password):
+    _ensure_db_initialized()
     db = SessionLocal()
     hashed_pw = hash_password(password)
     user = db.query(User).filter(User.email == email, User.password == hashed_pw).first()
@@ -105,6 +118,7 @@ def verify_user(email, password):
 
 
 def get_user_by_id(user_id):
+    _ensure_db_initialized()
     db = SessionLocal()
     user = db.query(User).filter(User.id == user_id).first()
     db.close()
@@ -114,6 +128,7 @@ def get_user_by_id(user_id):
 
 
 def get_all_users():
+    _ensure_db_initialized()
     db = SessionLocal()
     users = db.query(User).all()
     db.close()
@@ -121,6 +136,7 @@ def get_all_users():
 
 
 def delete_user(user_id):
+    _ensure_db_initialized()
     db = SessionLocal()
     user = db.query(User).filter(User.id == user_id).first()
     if user:
@@ -132,6 +148,7 @@ def delete_user(user_id):
 # --- Agents CRUD ---
 
 def create_agent(name, persona, status='active'):
+    _ensure_db_initialized()
     db = SessionLocal()
     agent = Agent(name=name, persona=persona, status=status)
     db.add(agent)
@@ -141,6 +158,7 @@ def create_agent(name, persona, status='active'):
 
 
 def get_all_agents():
+    _ensure_db_initialized()
     db = SessionLocal()
     agents = db.query(Agent).all()
     db.close()
@@ -148,6 +166,7 @@ def get_all_agents():
 
 
 def get_active_agent():
+    _ensure_db_initialized()
     db = SessionLocal()
     agent = db.query(Agent).filter(Agent.status == 'active').first()
     db.close()
@@ -157,6 +176,7 @@ def get_active_agent():
 
 
 def update_agent_status(agent_id, status):
+    _ensure_db_initialized()
     db = SessionLocal()
     agent = db.query(Agent).filter(Agent.id == agent_id).first()
     if agent:
@@ -166,6 +186,7 @@ def update_agent_status(agent_id, status):
 
 
 def delete_agent(agent_id):
+    _ensure_db_initialized()
     db = SessionLocal()
     agent = db.query(Agent).filter(Agent.id == agent_id).first()
     if agent:
@@ -177,6 +198,7 @@ def delete_agent(agent_id):
 # --- Journal CRUD ---
 
 def add_journal_entry(user_id, content):
+    _ensure_db_initialized()
     db = SessionLocal()
     entry = JournalEntry(user_id=user_id, content=content)
     db.add(entry)
@@ -185,6 +207,7 @@ def add_journal_entry(user_id, content):
 
 
 def get_journal_entries(user_id):
+    _ensure_db_initialized()
     db = SessionLocal()
     entries = db.query(JournalEntry).filter(JournalEntry.user_id == user_id).order_by(JournalEntry.timestamp.desc()).all()
     db.close()
