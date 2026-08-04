@@ -9,6 +9,14 @@ from database import (
 # Ensure database schema exists before the admin page loads.
 init_db()
 
+# Restrict access: only admin users can view this page
+current = st.session_state.get('current_user')
+if not current or current.get('role') != 'admin':
+    st.error("Acceso denegado. Se requiere rol 'admin' para ver este panel.")
+    if st.button("Iniciar Sesión / Volver al Inicio"):
+        st.switch_page("app.py")
+    st.stop()
+
 st.set_page_config(page_title="Admin - Apapacho", page_icon="⚙️", layout="wide")
 
 st.markdown("""

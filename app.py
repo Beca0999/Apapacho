@@ -1,6 +1,7 @@
 import streamlit as st
 import os
-from database import DATABASE_URL, init_db
+import extra_streamlit_components as stx
+from database import DATABASE_URL, init_db, verify_user, create_user, get_user_by_id
 
 print("APP START: DATABASE backend is POSTGRES" if DATABASE_URL.startswith("postgres") else "APP START: DATABASE backend is SQLITE")
 print("APP START: DATABASE_URL set:", "yes" if not DATABASE_URL.startswith("sqlite") else "no")
@@ -144,11 +145,58 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Navigation Buttons
+# Session & Navigation
+cookie_manager = stx.CookieManager(key="apapacho_session")
+
+# Restore session from cookie if present
+cookie_user_id = cookie_manager.get("apapacho_user_id")
+if cookie_user_id and not st.session_state.get('logged_in'):
+    user = get_user_by_id(int(cookie_user_id))
+    if user:
+        st.session_state.logged_in = True
+        st.session_state.current_user = user
+
 col1, col2 = st.columns([8, 1])
 with col2:
-    if st.button("Panel Admin ⚙️", use_container_width=True):
-        st.switch_page("pages/2_Admin.py")
+    if st.session_state.get('logged_in'):
+        # Show admin only for admins
+        current = st.session_state.get('current_user', {})
+        if current.get('role') == 'admin':
+            if st.button("Panel Admin ⚙️", use_container_width=True):
+                st.switch_page("pages/2_Admin.py")
+        if st.button("Cerrar Sesión", use_container_width=True):
+            cookie_manager.delete("apapacho_user_id")
+            st.session_state.logged_in = False
+            st.session_state.current_user = None
+            st.experimental_rerun()
+    else:
+        with st.expander("🔑 Iniciar Sesión / 📝 Registrarse"):
+            with st.form("landing_auth"):
+                auth_mode = st.radio("Acción", ["Ingresar", "Registrarme"], horizontal=True)
+                name = st.text_input("Nombre completo (solo registro)")
+                email = st.text_input("Correo electrónico")
+                password = st.text_input("Contraseña", type="password")
+                submit_auth = st.form_submit_button("Continuar")
+                if submit_auth:
+                    if auth_mode == "Ingresar":
+                        user = verify_user(email, password)
+                        if user:
+                            st.session_state.logged_in = True
+                            st.session_state.current_user = user
+                            cookie_manager.set("apapacho_user_id", str(user["id"]), max_age=86400*30)
+                            st.success("Sesión iniciada")
+                            st.experimental_rerun()
+                        else:
+                            st.error("Credenciales incorrectas")
+                    else:
+                        if not (name and email and password):
+                            st.warning("Completa todos los campos para registrarte.")
+                        else:
+                            ok = create_user(name, email, password)
+                            if ok:
+                                st.success("Registro exitoso. Ya puedes iniciar sesión.")
+                            else:
+                                st.error("El correo ya está registrado.")
 
 st.markdown("""
     <div class="page-banner">
