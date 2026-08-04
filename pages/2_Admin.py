@@ -1,9 +1,13 @@
 import streamlit as st
 import pandas as pd
 from database import (
+    init_db,
     get_all_users, create_user, delete_user,
     get_all_agents, create_agent, delete_agent, update_agent_status
 )
+
+# Ensure database schema exists before the admin page loads.
+init_db()
 
 st.set_page_config(page_title="Admin - Apapacho", page_icon="⚙️", layout="wide")
 

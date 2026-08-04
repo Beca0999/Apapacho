@@ -2,8 +2,11 @@ import streamlit as st
 from agent import get_chat_session, send_message
 import os
 from dotenv import load_dotenv
-from database import verify_user, create_user, get_journal_entries, add_journal_entry, get_user_by_id
+from database import init_db, verify_user, create_user, get_journal_entries, add_journal_entry, get_user_by_id
 import extra_streamlit_components as stx
+
+# Ensure database schema exists before any user login operations.
+init_db()
 
 st.set_page_config(page_title="Chat - Apapacho", page_icon="💬", layout="centered")
 
