@@ -6,11 +6,15 @@ venv/
 .venv/
 env/
 .env
+psicologa_ai_app/venv/
+psicologa_ai_app/.venv/
+psicologa_ai_app/.env
 
 # Base de datos local
 *.db
 *.sqlite3
 database.db
+database_test.db
 
 # Caché de Python
 __pycache__/

@@ -1,5 +1,12 @@
 import streamlit as st
 import os
+from database import DATABASE_URL, init_db
+
+print("APP START: DATABASE backend is POSTGRES" if DATABASE_URL.startswith("postgres") else "APP START: DATABASE backend is SQLITE")
+print("APP START: DATABASE_URL set:", "yes" if not DATABASE_URL.startswith("sqlite") else "no")
+
+# Ensure database tables exist before the app starts.
+init_db()
 
 # Page configuration MUST be the first Streamlit command
 st.set_page_config(

@@ -2,7 +2,9 @@ streamlit==1.36.0
 google-genai
 python-dotenv==1.0.1
 sqlalchemy==2.0.31
+psycopg2-binary
 fastapi
 uvicorn
+alembic
 extra-streamlit-components
 pyarrow

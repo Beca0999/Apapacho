@@ -51,7 +51,7 @@ with tab1:
                 email = st.text_input("Correo electrónico")
             
             password = st.text_input("Contraseña provisional (ej. 123456)", type="password")
-            role = st.selectbox("Rol", ["patient", "admin"])
+            role = st.selectbox("Rol", ["patient", "therapist", "admin"]) 
             
             submit = st.form_submit_button("Crear Usuario")
             if submit:
